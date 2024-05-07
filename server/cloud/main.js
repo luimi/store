@@ -6,18 +6,17 @@ const wompi = require("./wompiCtrl");
  * 
  * Errors:
  * 1 - User not found
- * 2 - Company or article is missing
+ * 2 - Coupon is missing
  */
 Parse.Cloud.define("generateLink", async (request) => {
     if(!request.user) return {success: false, code: 1}
-    if(!request.params.company || !request.params.coupon) return {success: false, code: 2}
+    if(!request.params.coupon) return {success: false, code: 2}
     const Receipt = Parse.Object.extend("Receipt");
     const receipt = new Receipt();
-    const company = await new Parse.Query("Company").get(request.params.company)
-    const coupon = await new Parse.Query("Coupon").get(request.params.coupon)
-    const companyRole = await new Parse.Query(Parse.Role).equalTo("name", company.get("name")).first()
+    const coupon = await new Parse.Query("Coupon").include("company").get(request.params.coupon)
+    const companyRole = await new Parse.Query(Parse.Role).equalTo("name", coupon.get("company").get("name")).first()
     receipt.set("user", request.user);
-    receipt.set("company", company);
+    receipt.set("company", coupon.get("company"));
     receipt.set("coupon", coupon);
     receipt.set("active", false);
     const acl = new Parse.ACL()

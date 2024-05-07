@@ -1,4 +1,6 @@
 const axios = require('axios');
+const dotenv = require("dotenv");
+dotenv.config();
 
 const { WOMPI_URL, WOMPI_TOKEN } = process.env;
 axios.defaults.headers.post['Authorization'] = `Bearer ${WOMPI_TOKEN}`;
@@ -15,7 +17,6 @@ module.exports = {
                 "amount_in_cents": price * 100,
                 "sku": id
             }).then((response) => {
-                console.log(response)
                 res({id: response.data.data.id, link: `https://checkout.wompi.co/l/${response.data.data.id}`})
             }).catch((error) => {
                 console.log(error);
