@@ -19,6 +19,7 @@ Parse.Cloud.define("generateLink", async (request) => {
     receipt.set("company", coupon.get("company"));
     receipt.set("coupon", coupon);
     receipt.set("active", false);
+    receipt.set("available", true)
     const acl = new Parse.ACL()
     acl.setReadAccess(request.user.id, true)
     acl.setRoleReadAccess(companyRole.id, true)
