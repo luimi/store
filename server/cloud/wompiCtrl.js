@@ -17,9 +17,9 @@ module.exports = {
                 "amount_in_cents": price * 100,
                 "sku": id
             }).then((response) => {
-                res({id: response.data.data.id, link: `https://checkout.wompi.co/l/${response.data.data.id}`})
+                res({success: true, data : {id: response.data.data.id, link: `https://checkout.wompi.co/l/${response.data.data.id}`}})
             }).catch((error) => {
-                console.log(error);
+                res({success: false, message: error.message})
             });
         })
     },

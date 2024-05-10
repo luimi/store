@@ -27,7 +27,7 @@ Parse.Cloud.define("generateLink", async (request) => {
     receipt.setACL(acl)
     const savedReceipt = await receipt.save()
     const link = await wompi.createLink(coupon.get("title"), savedReceipt.id, coupon.get("price"))
-    savedReceipt.set("linkId", link.id)
+    savedReceipt.set("linkId", link.data.id)
     await savedReceipt.save(null, {useMasterKey: true})
     return link
 });
