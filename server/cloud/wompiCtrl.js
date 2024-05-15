@@ -28,6 +28,7 @@ module.exports = {
         let receipt = await new Parse.Query("Receipt").equalTo("linkId", data.data.transaction.payment_link_id).first({useMasterKey: true});
         receipt.set("active", true);
         receipt.set("transaction", data);
-        receipt.save(null, {useMasterKey: true})
+        if(receipt.get("haveAmount")) receipt.set("left", receipt.get("left")-1);
+        receipt.save(null, {useMasterKey: true});
     }
 }
