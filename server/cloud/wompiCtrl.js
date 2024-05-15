@@ -25,7 +25,7 @@ module.exports = {
     },
     handleUpdate: async (data) => {
         if(data.event !== "transaction.updated" || data.data.transaction.status !== "APPROVED") return
-        let receipt = await new Parse.Query("Receipt").equalTo("linkId", data.data.transaction.payment_link_id).first({useMasterKey: true});
+        let receipt = await new Parse.Query("Receipt").include("coupon").equalTo("linkId", data.data.transaction.payment_link_id).first({useMasterKey: true});
         receipt.set("active", true);
         receipt.set("transaction", data);
         const coupon = receipt.get("coupon")
