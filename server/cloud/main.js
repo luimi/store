@@ -44,6 +44,7 @@ Parse.Cloud.define("buyFreeCoupon", async (request) => {
     if(!request.user) return {success: false, code: 1}
     if(!request.params.coupon) return {success: false, code: 2}
     const coupon = await new Parse.Query("Coupon").include("company").get(request.params.coupon)
+    const user = await new Parse.Query(Parse.User).get(request.user.id)
     if(coupon.get("price") !== 0) return {success: false, code: 3}
     const Receipt = Parse.Object.extend("Receipt");
     const receipt = new Receipt();
@@ -61,5 +62,6 @@ Parse.Cloud.define("buyFreeCoupon", async (request) => {
     const savedReceipt = await receipt.save()
     if(coupon.get("haveAmount")) coupon.set("left", coupon.get("left")-1);
     coupon.save(null, {useMasterKey: true});
+    emailCtrl.send(user.get("email"),user.get("name"),coupon.get("description"), savedReceipt.id)
     return savedReceipt.id;
 })
