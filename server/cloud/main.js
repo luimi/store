@@ -1,4 +1,5 @@
 const wompi = require("./wompiCtrl");
+const emailCtrl = require("./emailCtrl");
 
 /**
  * Generate payment Link
