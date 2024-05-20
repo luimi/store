@@ -24,6 +24,7 @@ exports.send = async (email, name, description, code) => {
         html: render,
     }
     let success = await sendBySendgrid(_email)
+    console.log(success)
     if(!success) success = await sendByGmail(_email)
     return
 }
@@ -45,6 +46,7 @@ const sendBySendgrid = (email) => {
                 res(true)
             })
             .catch((error) => {
+                console.log("ERROR.sengrid", error)
                 res(false)
             })
     })

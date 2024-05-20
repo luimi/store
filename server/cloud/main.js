@@ -45,18 +45,18 @@ Parse.Cloud.define("buyFreeCoupon", async (request) => {
     if(!request.user) return {success: false, code: 1}
     if(!request.params.coupon) return {success: false, code: 2}
     const coupon = await new Parse.Query("Coupon").include("company").get(request.params.coupon)
-    const user = await new Parse.Query(Parse.User).get(request.user.id)
+    const user = await new Parse.Query(Parse.User).get(request.user.id, {useMasterKey: true})
     if(coupon.get("price") !== 0) return {success: false, code: 3}
     const Receipt = Parse.Object.extend("Receipt");
     const receipt = new Receipt();
     const companyRole = await new Parse.Query(Parse.Role).equalTo("name", coupon.get("company").get("name")).first()
-    receipt.set("user", request.user);
+    receipt.set("user", user);
     receipt.set("company", coupon.get("company"));
     receipt.set("coupon", coupon);
     receipt.set("active", true);
     receipt.set("available", true)
     const acl = new Parse.ACL()
-    acl.setReadAccess(request.user.id, true)
+    acl.setReadAccess(user.id, true)
     acl.setRoleReadAccess(companyRole.id, true)
     acl.setRoleWriteAccess(companyRole.id, true)
     receipt.setACL(acl)
