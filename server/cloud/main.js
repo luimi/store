@@ -31,7 +31,15 @@ Parse.Cloud.define("generateLink", async (request) => {
     await savedReceipt.save(null, {useMasterKey: true})
     return link
 });
-
+/**
+ * Buy a free Coupon
+ * Creates the receipt
+ * 
+ * Errors:
+ * 1 - User not found
+ * 2 - Coupon is missing
+ * 3 - Coupon is not free
+ */
 Parse.Cloud.define("buyFreeCoupon", async (request) => {
     if(!request.user) return {success: false, code: 1}
     if(!request.params.coupon) return {success: false, code: 2}
