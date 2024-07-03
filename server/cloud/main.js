@@ -10,8 +10,8 @@ const emailCtrl = require("./emailCtrl");
  * 2 - Coupon is missing
  */
 Parse.Cloud.define("generateLink", async (request) => {
-    if(!request.user) return {success: false, code: 1}
-    if(!request.params.coupon) return {success: false, code: 2}
+    if (!request.user) return { success: false, code: 1 }
+    if (!request.params.coupon) return { success: false, code: 2 }
     const Receipt = Parse.Object.extend("Receipt");
     const receipt = new Receipt();
     const coupon = await new Parse.Query("Coupon").include("company").get(request.params.coupon)
@@ -29,7 +29,7 @@ Parse.Cloud.define("generateLink", async (request) => {
     const savedReceipt = await receipt.save()
     const link = await wompi.createLink(coupon.get("title"), savedReceipt.id, coupon.get("price"))
     savedReceipt.set("linkId", link.data.id)
-    await savedReceipt.save(null, {useMasterKey: true})
+    await savedReceipt.save(null, { useMasterKey: true })
     return link
 });
 /**
@@ -42,11 +42,11 @@ Parse.Cloud.define("generateLink", async (request) => {
  * 3 - Coupon is not free
  */
 Parse.Cloud.define("buyFreeCoupon", async (request) => {
-    if(!request.user) return {success: false, code: 1}
-    if(!request.params.coupon) return {success: false, code: 2}
+    if (!request.user) return { success: false, code: 1 }
+    if (!request.params.coupon) return { success: false, code: 2 }
     const coupon = await new Parse.Query("Coupon").include("company").get(request.params.coupon)
-    const user = await new Parse.Query(Parse.User).get(request.user.id, {useMasterKey: true})
-    if(coupon.get("price") !== 0) return {success: false, code: 3}
+    const user = await new Parse.Query(Parse.User).get(request.user.id, { useMasterKey: true })
+    if (coupon.get("price") !== 0) return { success: false, code: 3 }
     const Receipt = Parse.Object.extend("Receipt");
     const receipt = new Receipt();
     const companyRole = await new Parse.Query(Parse.Role).equalTo("name", coupon.get("company").get("name")).first()
@@ -61,8 +61,19 @@ Parse.Cloud.define("buyFreeCoupon", async (request) => {
     acl.setRoleWriteAccess(companyRole, true)
     receipt.setACL(acl)
     const savedReceipt = await receipt.save()
-    if(coupon.get("haveAmount")) coupon.set("left", coupon.get("left")-1);
-    coupon.save(null, {useMasterKey: true});
-    emailCtrl.send(user.get("email"),user.get("name"),coupon.get("description"), savedReceipt.id)
+    if (coupon.get("haveAmount")) coupon.set("left", coupon.get("left") - 1);
+    coupon.save(null, { useMasterKey: true });
+    emailCtrl.send(user.get("email"), user.get("name"), coupon.get("description"), savedReceipt.id)
     return savedReceipt.id;
+})
+
+/**
+ * Modify user ACL
+ */
+Parse.Cloud.afterSave(Parse.User, (request) => {
+    if(request.original) return
+    let acl = request.object.getACL()
+    acl.setPublicReadAccess(true)
+    request.object.setACL(acl)
+    request.object.save(null,{useMasterKey: true})
 })
