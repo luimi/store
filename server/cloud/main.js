@@ -57,8 +57,8 @@ Parse.Cloud.define("buyFreeCoupon", async (request) => {
     receipt.set("available", true)
     const acl = new Parse.ACL()
     acl.setReadAccess(user.id, true)
-    acl.setRoleReadAccess(companyRole.id, true)
-    acl.setRoleWriteAccess(companyRole.id, true)
+    acl.setRoleReadAccess(companyRole, true)
+    acl.setRoleWriteAccess(companyRole, true)
     receipt.setACL(acl)
     const savedReceipt = await receipt.save()
     if(coupon.get("haveAmount")) coupon.set("left", coupon.get("left")-1);
