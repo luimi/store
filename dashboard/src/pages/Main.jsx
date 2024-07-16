@@ -61,8 +61,8 @@ const Main = () => {
                 <div>
                     <div className="d-flex text-body-secondary py-3 align-items-center justify-content-center">
                         <i className="bd-placeholder-img flex-shrink-0 rounded bi bi-person-circle d-inline-block text-center me-3" style={{ fontSize: 30, verticalAlign: "middle" }} />
-                        <p className="ms-2 mb-0 small lh-sm d-none d-md-block">
-                            <strong className="d-block text-gray-dark">{user.get("username")}</strong>
+                        <p className="ms-2 mb-0 small lh-sm d-none d-md-block " style={{maxWidth: 140}}>
+                            <strong className="d-block text-gray-dark text-truncate">{user.get("username")}</strong>
                             {user.get("name")}
                         </p>
                     </div>
